@@ -105,6 +105,8 @@ resource "aws_s3_bucket" "b" {
 
 ### Using object lifecycle
 
+~> **NOTE:** See the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) for additional configuration features.
+
 ```terraform
 resource "aws_s3_bucket" "bucket" {
   bucket = "my-bucket"
@@ -363,7 +365,7 @@ The following arguments are supported:
 * `cors_rule` - (Optional) A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
 * `versioning` - (Optional) A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
 * `logging` - (Optional) A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
-* `lifecycle_rule` - (Optional) A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
+* `lifecycle_rule` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
 * `acceleration_status` - (Optional) Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
 * `request_payer` - (Optional) Specifies who should bear the cost of Amazon S3 data transfer.
 Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
@@ -403,38 +405,48 @@ The `logging` object supports the following:
 
 The `lifecycle_rule` object supports the following:
 
-* `id` - (Optional) Unique identifier for the rule. Must be less than or equal to 255 characters in length.
-* `prefix` - (Optional) Object key prefix identifying one or more objects to which the rule applies.
-* `tags` - (Optional) Specifies object tags key and value.
-* `enabled` - (Required) Specifies lifecycle rule status.
-* `abort_incomplete_multipart_upload_days` (Optional) Specifies the number of days after initiating a multipart upload when the multipart upload must be completed.
-* `expiration` - (Optional) Specifies a period in the object's expire (documented below).
-* `transition` - (Optional) Specifies a period in the object's transitions (documented below).
-* `noncurrent_version_expiration` - (Optional) Specifies when noncurrent object versions expire (documented below).
-* `noncurrent_version_transition` - (Optional) Specifies when noncurrent object versions transitions (documented below).
+~> **NOTE:** See the [`aws_s3_bucket_lifecycle_configuration` resource documentation](s3_bucket_lifecycle_configuration.html) to avoid conflicts. Lifecycle configuration can only be defined in one resource not both. When using the independent lifecycle configuration resource the following lifecycle rule is needed on the `aws_s3_bucket` resource.
+
+```
+lifecycle {
+  ignore_changes = [
+    lifecycle_rule
+  ]
+}
+```
+
+* `id` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Unique identifier for the rule. Must be less than or equal to 255 characters in length.
+* `prefix` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Object key prefix identifying one or more objects to which the rule applies.
+* `tags` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies object tags key and value.
+* `enabled` - (Required, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies lifecycle rule status.
+* `abort_incomplete_multipart_upload_days` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies the number of days after initiating a multipart upload when the multipart upload must be completed.
+* `expiration` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies a period in the object's expire (documented below).
+* `transition` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies a period in the object's transitions (documented below).
+* `noncurrent_version_expiration` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies when noncurrent object versions expire (documented below).
+* `noncurrent_version_transition` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies when noncurrent object versions transitions (documented below).
 
 At least one of `abort_incomplete_multipart_upload_days`, `expiration`, `transition`, `noncurrent_version_expiration`, `noncurrent_version_transition` must be specified.
 
 The `expiration` object supports the following
 
-* `date` (Optional) Specifies the date after which you want the corresponding action to take effect.
-* `days` (Optional) Specifies the number of days after object creation when the specific rule action takes effect.
-* `expired_object_delete_marker` (Optional) On a versioned bucket (versioning-enabled or versioning-suspended bucket), you can add this element in the lifecycle configuration to direct Amazon S3 to delete expired object delete markers. This cannot be specified with Days or Date in a Lifecycle Expiration Policy.
+* `date` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies the date after which you want the corresponding action to take effect.
+* `days` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies the number of days after object creation when the specific rule action takes effect.
+* `expired_object_delete_marker` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. On a versioned bucket (versioning-enabled or versioning-suspended bucket), you can add this element in the lifecycle configuration to direct Amazon S3 to delete expired object delete markers. This cannot be specified with Days or Date in a Lifecycle Expiration Policy.
 
 The `transition` object supports the following
 
-* `date` (Optional) Specifies the date after which you want the corresponding action to take effect.
-* `days` (Optional) Specifies the number of days after object creation when the specific rule action takes effect.
-* `storage_class` (Required) Specifies the Amazon S3 [storage class](https://docs.aws.amazon.com/AmazonS3/latest/API/API_Transition.html#AmazonS3-Type-Transition-StorageClass) to which you want the object to transition.
+* `date` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies the date after which you want the corresponding action to take effect.
+* `days` - (Optional, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies the number of days after object creation when the specific rule action takes effect.
+* `storage_class` - (Required, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies the Amazon S3 [storage class](https://docs.aws.amazon.com/AmazonS3/latest/API/API_Transition.html#AmazonS3-Type-Transition-StorageClass) to which you want the object to transition.
 
 The `noncurrent_version_expiration` object supports the following
 
-* `days` (Required) Specifies the number of days noncurrent object versions expire.
+* `days` - (Required, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies the number of days noncurrent object versions expire.
 
 The `noncurrent_version_transition` object supports the following
 
-* `days` (Required) Specifies the number of days noncurrent object versions transition.
-* `storage_class` (Required) Specifies the Amazon S3 [storage class](https://docs.aws.amazon.com/AmazonS3/latest/API/API_Transition.html#AmazonS3-Type-Transition-StorageClass) to which you want the object to transition.
+* `days` - (Required, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies the number of days noncurrent object versions transition.
+* `storage_class` - (Required, **DEPRECATED**) Use the [`aws_s3_bucket_lifecycle_configuration` resource](s3_bucket_lifecycle_configuration.html) instead. Specifies the Amazon S3 [storage class](https://docs.aws.amazon.com/AmazonS3/latest/API/API_Transition.html#AmazonS3-Type-Transition-StorageClass) to which you want the object to transition.
 
 The `replication_configuration` object supports the following:
 

@@ -23,6 +23,16 @@ func TagsSchemaComputed() *schema.Schema {
 	}
 }
 
+func TagsSchemaDeprecated(message string) *schema.Schema {
+	return &schema.Schema{
+		Type:       schema.TypeMap,
+		Optional:   true,
+		Computed:   true,
+		Elem:       &schema.Schema{Type: schema.TypeString},
+		Deprecated: message,
+	}
+}
+
 func TagsSchemaForceNew() *schema.Schema {
 	return &schema.Schema{
 		Type:     schema.TypeMap,
